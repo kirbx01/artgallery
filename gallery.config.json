@@ -1,0 +1,21 @@
+{
+  "owner": "kirbx01",
+  "repo": "artgallery",
+  "title": "artgallery",
+  "tagline": "A retro MS Paint art gallery you can embed straight into your GitHub README",
+  "description": "This is an artwork gallery made with mainfocus for artists to be able to embed their artworks directly on readme, since gh is a nice platform to show your art (atleast you can perceive it as one), not restricted to 2D Artworks, be it png, svg, jpg.",
+  "siteUrl": "https://kirbx01.github.io/artgallery",
+  "showcase": "image.png",
+  "showcaseAlt": "demo of the live view",
+  "gridColumns": 3,
+  "embed": {
+    "enabled": true,
+    "width": 512,
+    "height": 512,
+    "id": "01"
+  },
+  "sections": {
+    "credits": true,
+    "makeItYours": true
+  }
+}

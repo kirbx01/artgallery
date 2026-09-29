@@ -5,7 +5,8 @@
   "description": "Static MS Paint gallery with a serverless Spotify now-playing bridge",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "manifest": "node tools/build-manifest.mjs"
   },
   "engines": {
     "node": ">=18"
