@@ -575,3 +575,53 @@ a {
   white-space: nowrap;
   border: 0;
 }
+
+.tray__scroller.is-square {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  overflow-x: hidden;
+  gap: 6px;
+}
+
+.tray__scroller.is-square .thumb {
+  width: auto;
+  aspect-ratio: 1/1;
+  padding: 4px 4px 0;
+}
+
+.tray__scroller.is-square .thumb__img {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.tray__scroller.is-square .thumb__cap {
+  font-size: 10px;
+}
+
+#embed-only {
+  display: none;
+}
+
+html.is-embed body {
+  padding: 0;
+  background: #fff;
+  display: block;
+}
+
+html.is-embed .window {
+  display: none;
+}
+
+html.is-embed #embed-only {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+html.is-embed #embed-art {
+  width: min(100%, 512px);
+  height: auto;
+  image-rendering: pixelated;
+  display: block;
+}
