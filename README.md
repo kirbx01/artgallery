@@ -1,6 +1,6 @@
 # artgallery
 
-A retro Windows 98 / Vista pixel-art gallery. Pure HTML, CSS and JS — no build step, no dependencies. Drop it on any static host.
+A retro Windows 98 art gallery. Pure HTML, CSS and JS no build step, no dependencies. Drop it on any static host.
 
 **Live demo:** `https://kirbx01.github.io/artgallery/`
 
