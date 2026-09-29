@@ -39,11 +39,11 @@ git add artworksbyme/ js/data.js README.md
 git commit -m "Add your-art"
 ```
 
-Filenames become titles automatically (`my_new_art.png` → "My New Art"). To set one by hand, add it to the `TITLES` map in `tools/build-manifest.mjs`.
+Filenames become titles automatically (`my_new_art.png` -> "My New Art"). To set one by hand, add it to the `TITLES` map in `tools/build-manifest.mjs`.
 
 Artwork ids are stable: adding or removing a file never renumbers the others, so existing `?art=NN` links and embeds keep working.
 
-Put drafts in `artworksbyme/randoms_drafts/` — subfolders are skipped by the build.
+Put drafts in `artworksbyme/randoms_drafts/` subfolders are skipped by the build.
 
 ## Credits
 
