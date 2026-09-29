@@ -199,3 +199,129 @@ function applySquareMode(count) {
 
   buildTray();
 }
+
+function wireToolbox() {
+  $$('.tool').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$('.tool').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      state.tool = btn.dataset.tool;
+      el.stTool.textContent = 'Tool: ' + state.tool;
+      flashStatus(state.tool + ' tool selected');
+    });
+  });
+}
+
+function wireTitlebarButtons() {
+  $('#btn-max').addEventListener('click', () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen?.().catch(() => flashStatus('Fullscreen unavailable'));
+    }
+  });
+
+  $('#btn-close').addEventListener('click', () => {
+    if (confirm('myARTGALLERY cannot be closed.\n\n[OK] to return to the gallery.')) {
+      flashStatus('Nice try. The gallery is immortal.');
+    }
+  });
+
+  window.addEventListener('blur', () => el.window.classList.add('is-idle'));
+  window.addEventListener('focus', () => el.window.classList.remove('is-idle'));
+}
+
+function closeMenus(buttons) {
+  buttons.forEach(b => {
+    b.setAttribute('aria-expanded', 'false');
+    $('#menu-' + b.dataset.menu).hidden = true;
+  });
+}
+
+function wireMenus() {
+  const buttons = $$('.menubar__item[data-menu]');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const menu = $('#menu-' + btn.dataset.menu);
+      const opening = menu.hidden;
+      closeMenus(buttons);
+      menu.hidden = !opening;
+      btn.setAttribute('aria-expanded', String(opening));
+    });
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.menu, .menubar__item')) closeMenus(buttons);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMenus(buttons);
+  });
+
+  $$('.menu__item[data-action]').forEach(item => {
+    item.addEventListener('click', () => {
+      closeMenus(buttons);
+      runAction(item.dataset.action, item);
+    });
+  });
+}
+
+async function runAction(action, item) {
+  switch (action) {
+    case 'next':
+      showArtwork(state.index + 1);
+      break;
+    case 'prev':
+      showArtwork(state.index - 1);
+      break;
+    case 'reload':
+      location.reload();
+      break;
+    case 'copy-link':
+      await copyText(el.permalink.href);
+      flashStatus('Link copied to clipboard');
+      break;
+    case 'toggle-grid':
+      state.grid = !state.grid;
+      el.frame.classList.toggle('is-grid', state.grid);
+      item.setAttribute('aria-checked', String(state.grid));
+      break;
+    case 'toggle-bg':
+      state.checker = !state.checker;
+      el.frame.classList.toggle('is-plain', !state.checker);
+      item.setAttribute('aria-checked', String(state.checker));
+      break;
+    case 'grid':
+      applySquareMode(state.limit);
+      showArtwork(state.index);
+      break;
+    case 'strip':
+      applySquareMode(null);
+      showArtwork(state.index);
+      break;
+    case 'fullscreen':
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await document.documentElement.requestFullscreen?.().catch(() => flashStatus('Fullscreen unavailable'));
+      }
+      break;
+  }
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+    document.body.append(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+    } catch { }
+    ta.remove();
+  }
+}
