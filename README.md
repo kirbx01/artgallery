@@ -4,6 +4,8 @@ A retro Windows 98 / Vista pixel-art gallery. Pure HTML, CSS and JS — no build
 
 **Live demo:** `https://kirbx01.github.io/artgallery/`
 
+Published straight from the `main` branch — no build step, so the repo *is* the site. To turn it on: **Settings → Pages → Deploy from a branch → `main` / `root`**.
+
 ## Link it from your README
 
 Set `BASE` to your deployed URL, then paste any block below.
