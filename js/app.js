@@ -22,6 +22,7 @@ const el = {
 };
 
 const state = {
+  items: [],
   index: 0,
   tool: 'Select',
   colour: '#000000',
@@ -34,8 +35,8 @@ const state = {
 };
 
 function clampIndex(i) {
-  const n = window.ARTWORKS.length;
-  return ((i % n) + n) % n;
+  const n = state.items.length;
+  return n ? ((i % n) + n) % n : 0;
 }
 
 function idToIndex(id) {
@@ -53,7 +54,7 @@ function params() {
 }
 
 function visibleArtworks() {
-  return state.square ? window.ARTWORKS.slice(0, state.limit) : window.ARTWORKS;
+  return state.square ? state.items.slice(0, state.limit) : state.items;
 }
 
 function rgbToHex(rgb) {
@@ -86,17 +87,28 @@ function flashStatus(msg) {
   }, 1600);
 }
 
+async function loadArtworks() {
+  try {
+    const res = await fetch(window.ART_DIR + 'manifest.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    if (Array.isArray(data.artworks) && data.artworks.length) return data.artworks;
+  } catch { }
+  return window.ARTWORKS;
+}
+
 function showArtwork(index, { updateUrl = true, scroll = true } = {}) {
   state.index = clampIndex(index);
-  const item = window.ARTWORKS[state.index];
+  const item = state.items[state.index];
+  const src = window.ART_DIR + item.file;
 
   el.artwork.classList.add('is-loading');
-  el.artwork.alt = item.title + ' - ' + item.blurb;
-  el.artwork.src = item.art;
+  el.artwork.alt = item.title;
+  el.artwork.src = src;
 
   el.title.textContent = 'myARTGALLERY - ' + item.title;
   el.name.textContent = item.title;
-  el.size.textContent = item.blurb;
+  el.size.textContent = item.file;
 
   const permalink = new URL(location.href);
   permalink.searchParams.set('art', item.id);
@@ -110,13 +122,13 @@ function showArtwork(index, { updateUrl = true, scroll = true } = {}) {
   embedUrl.searchParams.delete('grid');
   el.embedLink.href = embedUrl.href;
   el.embedLink.textContent = 'embed';
-  el.embedArt.src = item.art;
+  el.embedArt.src = src;
   el.embedArt.alt = item.title;
 
   el.stView.innerHTML = 'Viewing: <strong>' + item.title + '</strong>';
   el.stIndex.textContent = state.square
     ? item.id + ' of ' + indexToId(state.limit - 1) + '  (' + state.cols + 'x' + state.cols + ')'
-    : item.id + ' of ' + indexToId(window.ARTWORKS.length - 1);
+    : item.id + ' of ' + indexToId(state.items.length - 1);
   el.stTool.textContent = 'Tool: ' + state.tool;
   el.stMsg.textContent = state.colour.toUpperCase() + ' / #FFFFFF';
 
@@ -140,11 +152,11 @@ function buildTray() {
     btn.dataset.index = String(i);
     btn.setAttribute('role', 'option');
     btn.setAttribute('aria-current', 'false');
-    btn.title = item.title + ' - ' + item.blurb + '  (?art=' + item.id + ')';
+    btn.title = item.title + '  (?art=' + item.id + ')';
 
     const img = document.createElement('img');
     img.className = 'thumb__img';
-    img.src = item.art;
+    img.src = window.ART_DIR + item.file;
     img.alt = '';
     img.loading = 'lazy';
     img.decoding = 'async';
@@ -186,8 +198,8 @@ function paintActiveSwatch() {
 }
 
 function applySquareMode(count) {
-  const total = window.ARTWORKS.length;
-  state.square = count != null;
+  const total = state.items.length;
+  state.square = count != null && total > 0;
   state.limit = count == null ? total : Math.min(Math.max(1, count), total);
   state.cols = Math.ceil(Math.sqrt(state.limit));
 
@@ -367,7 +379,7 @@ function wireKeyboard() {
         break;
       case 'End':
         e.preventDefault();
-        showArtwork(window.ARTWORKS.length - 1);
+        showArtwork(state.items.length - 1);
         break;
       case 'g':
       case 'G':
@@ -398,7 +410,13 @@ function wireHistory() {
 }
 
 function wireCanvasImage() {
-  el.artwork.addEventListener('load', () => el.artwork.classList.remove('is-loading'));
+  el.artwork.addEventListener('load', () => {
+    el.artwork.classList.remove('is-loading');
+    const img = el.artwork;
+    if (img.naturalWidth) {
+      el.size.textContent = img.naturalWidth + ' x ' + img.naturalHeight;
+    }
+  });
   el.artwork.addEventListener('error', () => {
     el.artwork.classList.remove('is-loading');
     flashStatus('Could not load image');
@@ -406,11 +424,21 @@ function wireCanvasImage() {
   if (el.artwork.complete) el.artwork.classList.remove('is-loading');
 }
 
-function init() {
+async function init() {
   const p = params();
 
   state.embed = p.get('embed') === '1';
   if (state.embed) document.documentElement.classList.add('is-embed');
+
+  state.items = await loadArtworks();
+
+  if (!state.items.length) {
+    el.stView.textContent = 'No artworks found';
+    el.title.textContent = 'myARTGALLERY';
+    el.name.textContent = 'Add images to artworksbyme/';
+    el.size.textContent = 'then run node tools/build-manifest.mjs';
+    return;
+  }
 
   const grid = p.get('grid');
   applySquareMode(grid == null ? null : parseInt(grid, 10) || null);
@@ -434,7 +462,7 @@ function init() {
 
   writeUrl({ keepSquare: state.square });
 
-  flashStatus(window.ARTWORKS.length + ' artworks loaded');
+  flashStatus(state.items.length + ' artworks loaded');
 }
 
 document.addEventListener('DOMContentLoaded', init);

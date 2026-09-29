@@ -1,0 +1,34 @@
+{
+  "artworks": [
+    {
+      "id": "01",
+      "file": "angrypup.png",
+      "title": "Angry Pup"
+    },
+    {
+      "id": "02",
+      "file": "blockart_unfinished_Anatomylesson.png",
+      "title": "Anatomy Lesson (Blockart)"
+    },
+    {
+      "id": "03",
+      "file": "CID_funartposter.png",
+      "title": "CID Fun Art Poster"
+    },
+    {
+      "id": "04",
+      "file": "eminem_potrait_lineart.png",
+      "title": "Eminem Portrait Lineart"
+    },
+    {
+      "id": "05",
+      "file": "foofighters_jjba.png",
+      "title": "Foo Fighters JJBA"
+    },
+    {
+      "id": "06",
+      "file": "invincible.png",
+      "title": "Invincible"
+    }
+  ]
+}
