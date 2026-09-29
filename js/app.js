@@ -325,3 +325,116 @@ async function copyText(text) {
     ta.remove();
   }
 }
+
+function wireTray() {
+  el.tray.addEventListener('click', e => {
+    const thumb = e.target.closest('.thumb');
+    if (!thumb) return;
+    if (state.square) applySquareMode(null);
+    showArtwork(Number(thumb.dataset.index));
+  });
+}
+
+function wirePalette() {
+  el.palette.addEventListener('click', e => {
+    const sw = e.target.closest('.swatch');
+    if (!sw) return;
+    state.colour = rgbToHex(getComputedStyle(sw).backgroundColor);
+    paintActiveSwatch();
+    el.stMsg.textContent = state.colour.toUpperCase() + ' / #FFFFFF';
+  });
+}
+
+function wireKeyboard() {
+  document.addEventListener('keydown', e => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'PageDown':
+        e.preventDefault();
+        showArtwork(state.index + 1);
+        break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault();
+        showArtwork(state.index - 1);
+        break;
+      case 'Home':
+        e.preventDefault();
+        showArtwork(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        showArtwork(window.ARTWORKS.length - 1);
+        break;
+      case 'g':
+      case 'G':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          runAction(state.square ? 'strip' : 'grid');
+        }
+        break;
+      case 'l':
+      case 'L':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          runAction('copy-link');
+        }
+        break;
+    }
+  });
+}
+
+function wireHistory() {
+  window.addEventListener('popstate', () => {
+    const p = params();
+    const grid = p.get('grid');
+    applySquareMode(grid == null ? null : parseInt(grid, 10) || null);
+    const i = idToIndex(p.get('art') ?? '');
+    if (i >= 0) showArtwork(i, { updateUrl: false });
+  });
+}
+
+function wireCanvasImage() {
+  el.artwork.addEventListener('load', () => el.artwork.classList.remove('is-loading'));
+  el.artwork.addEventListener('error', () => {
+    el.artwork.classList.remove('is-loading');
+    flashStatus('Could not load image');
+  });
+  if (el.artwork.complete) el.artwork.classList.remove('is-loading');
+}
+
+function init() {
+  const p = params();
+
+  state.embed = p.get('embed') === '1';
+  if (state.embed) document.documentElement.classList.add('is-embed');
+
+  const grid = p.get('grid');
+  applySquareMode(grid == null ? null : parseInt(grid, 10) || null);
+
+  buildPalette();
+  wireToolbox();
+  wireTitlebarButtons();
+  wireMenus();
+  wireTray();
+  wirePalette();
+  wireKeyboard();
+  wireHistory();
+  wireCanvasImage();
+
+  const readme = p.get('readme');
+  if (readme) el.back.href = readme;
+
+  const requested = p.get('art');
+  const resolved = requested == null ? 0 : idToIndex(requested);
+  showArtwork(resolved >= 0 ? resolved : 0, { updateUrl: false });
+
+  writeUrl({ keepSquare: state.square });
+
+  flashStatus(window.ARTWORKS.length + ' artworks loaded');
+}
+
+document.addEventListener('DOMContentLoaded', init);
