@@ -625,3 +625,119 @@ html.is-embed #embed-art {
   image-rendering: pixelated;
   display: block;
 }
+
+@media (max-width: 820px) {
+  .client {
+    grid-template-columns: 1fr;
+    grid-template-areas: "tools" "stage";
+  }
+
+  .toolbox {
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
+  .toolbox__group {
+    display: flex;
+  }
+
+  .toolbox__sep {
+    width: 2px;
+    height: auto;
+    margin: 2px 3px;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 1px solid var(--win-gray-dk);
+    border-right: 1px solid #fff;
+  }
+
+  .canvas-frame {
+    min-height: 200px;
+    padding: 6px;
+  }
+
+  #artwork {
+    max-height: 52vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .tb-btn--back .tb-btn--back-full {
+    display: none;
+  }
+
+  .tb-btn--back .tb-btn--back-mini {
+    display: inline;
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .window {
+    min-height: 100dvh;
+    border-width: 0;
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .titlebar__text {
+    font-size: 11px;
+  }
+
+  .thumb {
+    width: 64px;
+  }
+
+  .tray__scroller.is-square .thumb {
+    width: auto;
+  }
+
+  .statusbar__pane--h,
+  .statusbar__pane--zoom {
+    display: none;
+  }
+
+  .canvas-frame {
+    min-height: 180px;
+  }
+
+  #artwork {
+    max-height: 46vh;
+  }
+
+  .swatch {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  .thumb {
+    width: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --win-gray: #d4d0c8;
+  }
+}
