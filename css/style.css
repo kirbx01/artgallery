@@ -142,15 +142,13 @@ a {
 }
 
 .tb-btn--back {
-  padding: 0 6px;
-  font-size: 10px;
-  white-space: nowrap;
+  width: 22px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
   text-decoration: none;
   color: #000;
-}
-
-.tb-btn--back-mini {
-  display: none;
 }
 
 .menubar {
@@ -267,26 +265,26 @@ a {
 
 .toolbox {
   grid-area: tools;
-  width: 62px;
+  width: 32px;
   padding: 3px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 0;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .toolbox__group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
 }
 
 .toolbox__sep {
   height: 2px;
-  margin: 2px 1px;
+  margin: 0;
   border-top: 1px solid var(--win-gray-dk);
   border-bottom: 1px solid #fff;
 }
@@ -642,6 +640,7 @@ html.is-embed #embed-art {
     width: auto;
     flex-direction: row;
     align-items: center;
+    gap: 0;
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: thin;
@@ -649,12 +648,14 @@ html.is-embed #embed-art {
 
   .toolbox__group {
     display: flex;
+    flex-direction: row;
+    gap: 0;
   }
 
   .toolbox__sep {
     width: 2px;
     height: auto;
-    margin: 2px 3px;
+    margin: 0;
     border-top: 0;
     border-bottom: 0;
     border-left: 1px solid var(--win-gray-dk);
@@ -668,16 +669,6 @@ html.is-embed #embed-art {
 
   #artwork {
     max-height: 52vh;
-  }
-}
-
-@media (max-width: 640px) {
-  .tb-btn--back .tb-btn--back-full {
-    display: none;
-  }
-
-  .tb-btn--back .tb-btn--back-mini {
-    display: inline;
   }
 }
 
