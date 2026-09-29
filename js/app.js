@@ -85,3 +85,117 @@ function flashStatus(msg) {
     el.stMsg.textContent = state.colour.toUpperCase() + ' / #FFFFFF';
   }, 1600);
 }
+
+function showArtwork(index, { updateUrl = true, scroll = true } = {}) {
+  state.index = clampIndex(index);
+  const item = window.ARTWORKS[state.index];
+
+  el.artwork.classList.add('is-loading');
+  el.artwork.alt = item.title + ' - ' + item.blurb;
+  el.artwork.src = item.art;
+
+  el.title.textContent = 'myARTGALLERY - ' + item.title;
+  el.name.textContent = item.title;
+  el.size.textContent = item.blurb;
+
+  const permalink = new URL(location.href);
+  permalink.searchParams.set('art', item.id);
+  permalink.searchParams.delete('embed');
+  el.permalink.href = permalink.href;
+  el.permalink.textContent = '?art=' + item.id;
+
+  const embedUrl = new URL(location.href);
+  embedUrl.searchParams.set('art', item.id);
+  embedUrl.searchParams.set('embed', '1');
+  embedUrl.searchParams.delete('grid');
+  el.embedLink.href = embedUrl.href;
+  el.embedLink.textContent = 'embed';
+  el.embedArt.src = item.art;
+  el.embedArt.alt = item.title;
+
+  el.stView.innerHTML = 'Viewing: <strong>' + item.title + '</strong>';
+  el.stIndex.textContent = state.square
+    ? item.id + ' of ' + indexToId(state.limit - 1) + '  (' + state.cols + 'x' + state.cols + ')'
+    : item.id + ' of ' + indexToId(window.ARTWORKS.length - 1);
+  el.stTool.textContent = 'Tool: ' + state.tool;
+  el.stMsg.textContent = state.colour.toUpperCase() + ' / #FFFFFF';
+
+  $$('.thumb', el.tray).forEach(t => {
+    const active = Number(t.dataset.index) === state.index;
+    t.setAttribute('aria-current', active ? 'true' : 'false');
+    t.tabIndex = active ? 0 : -1;
+  });
+  if (scroll) scrollThumbIntoView();
+  if (updateUrl) writeUrl({ keepSquare: state.square });
+}
+
+function buildTray() {
+  el.tray.textContent = '';
+  const frag = document.createDocumentFragment();
+
+  visibleArtworks().forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'thumb';
+    btn.dataset.index = String(i);
+    btn.setAttribute('role', 'option');
+    btn.setAttribute('aria-current', 'false');
+    btn.title = item.title + ' - ' + item.blurb + '  (?art=' + item.id + ')';
+
+    const img = document.createElement('img');
+    img.className = 'thumb__img';
+    img.src = item.art;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+
+    const cap = document.createElement('span');
+    cap.className = 'thumb__cap';
+    cap.textContent = item.id + ' ' + item.title;
+
+    btn.append(img, cap);
+    frag.append(btn);
+  });
+
+  el.tray.append(frag);
+}
+
+function buildPalette() {
+  const frag = document.createDocumentFragment();
+  window.PALETTE.forEach(colour => {
+    const sw = document.createElement('button');
+    sw.type = 'button';
+    sw.className = 'swatch';
+    sw.style.background = colour;
+    sw.title = colour.toUpperCase();
+    sw.setAttribute('aria-label', 'Colour ' + colour);
+    const fill = document.createElement('span');
+    fill.className = 'swatch__fill';
+    fill.style.background = colour;
+    sw.append(fill);
+    frag.append(sw);
+  });
+  el.palette.append(frag);
+  paintActiveSwatch();
+}
+
+function paintActiveSwatch() {
+  $$('.swatch', el.palette).forEach(sw => {
+    sw.classList.toggle('is-active', rgbToHex(getComputedStyle(sw).backgroundColor) === state.colour);
+  });
+}
+
+function applySquareMode(count) {
+  const total = window.ARTWORKS.length;
+  state.square = count != null;
+  state.limit = count == null ? total : Math.min(Math.max(1, count), total);
+  state.cols = Math.ceil(Math.sqrt(state.limit));
+
+  el.tray.classList.toggle('is-square', state.square);
+  el.tray.style.setProperty('--cols', String(state.cols));
+  el.trayLabel.textContent = state.square
+    ? 'Square grid - ' + state.limit + ' artworks (' + state.cols + ' x ' + state.cols + ')'
+    : 'Gallery - click a thumbnail to open it';
+
+  buildTray();
+}
