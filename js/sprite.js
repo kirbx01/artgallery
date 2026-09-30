@@ -42,6 +42,10 @@ window.TOOL_SPRITE = {
   const { url, cell, gap, scale, sheet, map } = cfg;
   if (!url || !cell || !scale || !sheet || !sheet.width || !sheet.height) return;
 
+  /* --sprite-url is consumed by css/style.css, and a relative url() there
+     resolves against the stylesheet rather than the page, so pin it absolute. */
+  const href = new URL(url, document.baseURI).href;
+
   function apply() {
     const tools = [...document.querySelectorAll('.tool')].filter(
       tool => map[tool.dataset.tool]
@@ -49,7 +53,7 @@ window.TOOL_SPRITE = {
     if (!tools.length) return;
 
     const root = document.documentElement.style;
-    root.setProperty('--sprite-url', `url("${url}")`);
+    root.setProperty('--sprite-url', `url("${href}")`);
     root.setProperty('--sprite-size', `${sheet.width * scale}px ${sheet.height * scale}px`);
     root.setProperty('--sprite-box', `${cell * scale}px`);
 
@@ -60,4 +64,8 @@ window.TOOL_SPRITE = {
       tool.classList.add('is-sprite');
     });
   }
+
+  const probe = new Image();
+  probe.addEventListener('load', apply);
+  probe.src = href;
 })();
