@@ -34,3 +34,11 @@ window.TOOL_SPRITE = {
     Erase: [3, 1]
   }
 };
+
+(function () {
+  const cfg = window.TOOL_SPRITE;
+  if (!cfg) return;
+
+  const { url, cell, gap, scale, sheet, map } = cfg;
+  if (!url || !cell || !scale || !sheet || !sheet.width || !sheet.height) return;
+})();
