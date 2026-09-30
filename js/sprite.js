@@ -41,4 +41,23 @@ window.TOOL_SPRITE = {
 
   const { url, cell, gap, scale, sheet, map } = cfg;
   if (!url || !cell || !scale || !sheet || !sheet.width || !sheet.height) return;
+
+  function apply() {
+    const tools = [...document.querySelectorAll('.tool')].filter(
+      tool => map[tool.dataset.tool]
+    );
+    if (!tools.length) return;
+
+    const root = document.documentElement.style;
+    root.setProperty('--sprite-url', `url("${url}")`);
+    root.setProperty('--sprite-size', `${sheet.width * scale}px ${sheet.height * scale}px`);
+    root.setProperty('--sprite-box', `${cell * scale}px`);
+
+    const step = (cell + gap) * scale;
+    tools.forEach(tool => {
+      const [col, row] = map[tool.dataset.tool];
+      tool.style.setProperty('--sprite-pos', `${-col * step}px ${-row * step}px`);
+      tool.classList.add('is-sprite');
+    });
+  }
 })();
