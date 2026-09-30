@@ -312,10 +312,6 @@ a {
   box-shadow: none;
 }
 
-.tool[aria-pressed="true"] .tool__glyph {
-  transform: translate(1px, 1px);
-}
-
 .tool:focus-visible {
   outline: 1px dotted #000;
   outline-offset: -3px;
