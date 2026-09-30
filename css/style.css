@@ -306,9 +306,14 @@ a {
   background: #c8c8c8;
 }
 
-.tool[aria-pressed="true"] {
-  border: 1px inset var(--win-gray-dk);
-  background-color: var(--win-gray-lt);
+/* Active tool: Win98 sunken bevel. An explicit `inset` border carries the
+   depth on its own, so the resting box-shadow is cancelled explicitly
+   instead of relying on declaration order. */
+.tool[aria-pressed="true"],
+.tool-btn.active,
+.tool:active {
+  border: 1px inset #808080;
+  background-color: #dfdfdf;
   box-shadow: none;
 }
 
@@ -317,6 +322,8 @@ a {
   outline-offset: -3px;
 }
 
+/* Authentic 16x16 Win98 tool glyphs are inline SVG in index.html, so they
+   stay crisp without any sheet fetch or background-position math. */
 .tool__glyph {
   width: 16px;
   height: 16px;
@@ -329,22 +336,6 @@ a {
   width: 16px;
   height: 16px;
   shape-rendering: crispEdges;
-}
-
-/* Sprite-sheet mode. Opt-in per button by js/sprite.js, which sets
-   --sprite-pos (background-position) and is-sprite from TOOL_SPRITE.map.
-   With the sheet disabled the inline SVG above is left untouched. */
-.tool.is-sprite .tool__glyph {
-  width: var(--sprite-box, 16px);
-  height: var(--sprite-box, 16px);
-  background-image: var(--sprite-url);
-  background-repeat: no-repeat;
-  background-position: var(--sprite-pos, 0 0);
-  background-size: var(--sprite-size, auto);
-}
-
-.tool.is-sprite .tool__glyph svg {
-  display: none;
 }
 
 .stage {
