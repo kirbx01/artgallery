@@ -324,6 +324,7 @@ a {
   width: 16px;
   height: 16px;
   display: block;
+  image-rendering: pixelated;
 }
 
 .tool__glyph svg {
