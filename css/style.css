@@ -343,6 +343,10 @@ a {
   background-size: var(--sprite-size, auto);
 }
 
+.tool.is-sprite .tool__glyph svg {
+  display: none;
+}
+
 .stage {
   grid-area: stage;
   display: flex;
