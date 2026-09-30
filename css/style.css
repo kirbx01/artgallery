@@ -331,6 +331,14 @@ a {
   shape-rendering: crispEdges;
 }
 
+/* Sprite-sheet mode. Opt-in per button by js/sprite.js, which sets
+   --sprite-pos (background-position) and is-sprite from TOOL_SPRITE.map.
+   With the sheet disabled the inline SVG above is left untouched. */
+.tool.is-sprite .tool__glyph {
+  width: var(--sprite-box, 16px);
+  height: var(--sprite-box, 16px);
+}
+
 .stage {
   grid-area: stage;
   display: flex;
