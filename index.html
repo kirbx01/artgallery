@@ -136,6 +136,38 @@
         <div class="palette__row" id="palette" aria-label="Color palette"></div>
       </div>
 
+<section class="np bevel-out" id="np" data-tone="idle" aria-label="Spotify now playing">
+        <div class="np__screen bevel-in" id="np-screen">
+          <div class="np__lcd">
+            <p class="np__state" id="np-state">Spotify: Idle</p>
+            <p class="np__track" id="np-track" aria-live="polite">Spotify: Idle</p>
+            <div class="np__progress" role="progressbar" aria-label="Track progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="np__fill" id="np-progress"></span>
+            </div>
+            <p class="np__time"><span id="np-elapsed">--:--</span> / <span id="np-total">--:--</span></p>
+          </div>
+        </div>
+
+        <div class="np__artframe bevel-in">
+          <img class="np__art" id="np-art" alt="" width="40" height="40" decoding="async">
+        </div>
+
+        <div class="np__btns">
+          <button class="np__btn" type="button" id="np-prev" title="Previous track" aria-label="Previous track">&#9668;&#9668;</button>
+          <button class="np__btn np__btn--play" type="button" id="np-toggle" title="Play or pause" aria-label="Play">&#9654;</button>
+          <button class="np__btn" type="button" id="np-next" title="Next track" aria-label="Next track">&#9658;&#9658;</button>
+        </div>
+
+        <svg class="np__logo" viewBox="0 0 16 16" width="16" height="16" shape-rendering="crispEdges" role="img" aria-label="Spotify">
+          <path d="M5 1h6l4 4v6l-4 4H5L1 11V5z" fill="#1db954"/>
+          <g fill="none" stroke="#000" stroke-width="1" stroke-linecap="square">
+            <path d="M4 5h2V4h4v1h2"/>
+            <path d="M5 8h2V7h3v1h2"/>
+            <path d="M6 11h2v-1h2v1h1"/>
+          </g>
+        </svg>
+      </section>
+
       <div class="statusbar" role="status" aria-live="polite">
         <div class="statusbar__pane bevel-in statusbar__pane--w" id="status-viewing">Ready</div>
         <div class="statusbar__pane bevel-in statusbar__pane--h" id="status-index">&nbsp;</div>
@@ -151,6 +183,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/palette.js"></script>
+<script src="js/nowplaying.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
