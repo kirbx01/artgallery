@@ -309,7 +309,7 @@ a {
 .tool[aria-pressed="true"] {
   border: 1px inset var(--win-gray-dk);
   background-color: var(--win-gray-lt);
-  box-shadow: inset 1px 1px 0 var(--win-gray-dk2), inset -1px -1px 0 #fff;
+  box-shadow: none;
 }
 
 .tool[aria-pressed="true"] .tool__glyph {
