@@ -339,6 +339,8 @@ a {
   height: var(--sprite-box, 16px);
   background-image: var(--sprite-url);
   background-repeat: no-repeat;
+  background-position: var(--sprite-pos, 0 0);
+  background-size: var(--sprite-size, auto);
 }
 
 .stage {
