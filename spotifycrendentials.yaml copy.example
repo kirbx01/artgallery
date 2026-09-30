@@ -1,0 +1,13 @@
+# Copy to spotifycrendentials.yaml and fill in. That file is gitignored.
+#
+# Get a client id/secret from the Spotify Developer Dashboard
+# (https://developer.spotify.com/dashboard) and add a redirect URI.
+# The refresh token requires Premium for playback control; without it the
+# widget still works read-only.
+
+client_id: "your-spotify-client-id"
+client_secret: "your-spotify-client-secret"
+
+# Authorization Code flow, scope: user-read-currently-playing
+# user-read-playback-state user-modify-playback-state
+refresh_token: "your-refresh-token"
