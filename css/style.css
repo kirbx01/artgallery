@@ -337,6 +337,8 @@ a {
 .tool.is-sprite .tool__glyph {
   width: var(--sprite-box, 16px);
   height: var(--sprite-box, 16px);
+  background-image: var(--sprite-url);
+  background-repeat: no-repeat;
 }
 
 .stage {
