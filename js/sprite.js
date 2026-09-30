@@ -19,5 +19,18 @@ window.TOOL_SPRITE = {
   gap: 0,
   scale: 1,
   sheet: { width: 0, height: 0 },
-  map: {}
+  map: {
+    Select: [0, 0],
+    Eraser: [1, 0],
+    Pencil: [2, 0],
+    Brush: [3, 0],
+    Fill: [4, 0],
+    Text: [5, 0],
+    Line: [6, 0],
+    Rectangle: [7, 0],
+    Ellipse: [0, 1],
+    Pick: [1, 1],
+    Magnify: [2, 1],
+    Erase: [3, 1]
+  }
 };
