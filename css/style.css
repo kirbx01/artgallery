@@ -307,7 +307,7 @@ a {
 }
 
 .tool[aria-pressed="true"] {
-  background: var(--win-gray-dk);
+  border: 1px inset var(--win-gray-dk);
   box-shadow: inset 1px 1px 0 var(--win-gray-dk2), inset -1px -1px 0 #fff;
 }
 
