@@ -10,3 +10,6 @@ artworksbyme/randoms_drafts/
 .env
 .env.*
 !.env.example
+
+# built Go CLI
+/artgallery
