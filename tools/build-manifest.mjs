@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -6,6 +6,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dir = join(root, 'artworksbyme');
 const manifestPath = join(dir, 'manifest.json');
 const dataPath = join(root, 'js', 'data.js');
+const generatedDir = join(root, 'generated');
 const configPath = join(root, 'gallery.config.json');
 const readmePath = join(root, 'README.md');
 
@@ -29,6 +30,10 @@ const humanise = f => f
   .replace(/\s+/g, ' ')
   .trim()
   .replace(/\b\w/g, c => c.toUpperCase());
+
+const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+})[c]);
 
 const pad = n => String(n).padStart(2, '0');
 
@@ -57,6 +62,19 @@ const artworks = files.map(file => {
   return { id, file, title: (seen && seen.title) || TITLES[file] || humanise(file) };
 });
 
+mkdirSync(generatedDir, { recursive: true });
+const artworkIds = new Set(artworks.map(a => a.id));
+for (const name of readdirSync(generatedDir)) {
+  if (/^\d+\.svg$/.test(name) && !artworkIds.has(name.slice(0, -4))) unlinkSync(join(generatedDir, name));
+}
+for (const artwork of artworks) {
+  const extension = artwork.file.slice(artwork.file.lastIndexOf('.')).toLowerCase();
+  const mime = extension === '.jpg' || extension === '.jpeg' ? 'image/jpeg' : 'image/' + extension.slice(1);
+  const image = readFileSync(join(dir, artwork.file)).toString('base64');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><image width="128" height="128" href="data:${mime};base64,${image}" preserveAspectRatio="xMidYMid slice"/></svg>\n`;
+  writeFileSync(join(generatedDir, artwork.id + '.svg'), svg);
+}
+
 writeFileSync(manifestPath, JSON.stringify({ artworks }, null, 2) + '\n');
 writeFileSync(dataPath, `window.ARTWORKS = ${JSON.stringify(artworks, null, 2)};\n\nwindow.ART_DIR = 'artworksbyme/';\n`);
 
@@ -80,6 +98,18 @@ if (config.embed && config.embed.enabled) {
   head.push(`Swap \`art=${config.embed.id || artworks[0].id}\` for any id from the table above.`, '');
 }
 
+if (config.profileIcons && config.profileIcons.enabled && artworks.length) {
+  const size = Math.max(1, Math.floor(Number(config.profileIcons.size) || 52));
+  head.push('## Profile art icons', '');
+  head.push('Use this centered row in a GitHub profile README:', '');
+  head.push('Set `profileIcons.size` in `gallery.config.json` to change the displayed width; each tile stays square.', '');
+  head.push('```html');
+  head.push('<p align="center">');
+  head.push(artworks.map(a => `  <a href="${site}/?art=${a.id}"><img src="${site}/generated/${a.id}.svg" width="${size}" alt="${escapeHtml(a.title)}"></a>`).join('\n'));
+  head.push('</p>');
+  head.push('```', '');
+}
+
 if (artworks.length) {
   head.push('## Artworks', '');
   const cell = a => `<a href="${site}/?art=${a.id}"><img src="artworksbyme/${a.file}" width="240" alt="${a.title}"><br><sub>${a.id} · ${a.title}</sub></a>`;
@@ -95,13 +125,13 @@ if (config.sections && config.sections.makeItYours) {
   head.push('## Make this yours', '');
   head.push('This gallery is meant to be forked. Three steps, no build step:', '');
   head.push('1. Drop your images into `artworksbyme/` (png, jpg, jpeg, gif, webp, avif, bmp).');
-  head.push('2. Edit `gallery.config.json` — your name, tagline, description, grid width and embed size.');
+  head.push('2. Edit `gallery.config.json` — your name, tagline, description, grid width, embed size and profile icon size.');
   head.push('3. Run `npm run manifest` and commit.');
   head.push('');
   head.push('```bash');
   head.push('cp your-art.png artworksbyme/');
   head.push('npm run manifest');
-  head.push('git add artworksbyme/ js/data.js README.md');
+  head.push('git add artworksbyme/ generated/ js/data.js README.md');
   head.push('git commit -m "Add your-art"');
   head.push('```');
   head.push('');
@@ -122,11 +152,12 @@ if (config.sections && config.sections.credits) {
 const generated = head.join('\n');
 const existing = existsSync(readmePath) ? readFileSync(readmePath, 'utf8') : '';
 const kept = existing.includes(END) ? existing.slice(existing.indexOf(END) + END.length) : '';
-const managed = [START, generated.trimEnd(), END, ''].join('\n');
+const managed = [START, generated.trimEnd(), END].join('\n');
+const hasManagedBlock = existing.includes(START) && existing.includes(END);
 
-writeFileSync(readmePath, existing.includes(START) && existing.includes(END)
-  ? existing.slice(0, existing.indexOf(START)) + managed + kept
-  : managed + kept);
+writeFileSync(readmePath, hasManagedBlock
+  ? existing.slice(0, existing.indexOf(START)) + managed + (kept.trim() ? kept : '\n')
+  : managed + '\n');
 
 console.log(`manifest: ${artworks.length} artworks`);
 artworks.forEach(a => console.log(`  ${a.id}  ${a.title.padEnd(24)} ${a.file}`));
