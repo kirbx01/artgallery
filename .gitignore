@@ -6,8 +6,6 @@ node_modules/
 # drafts, not published
 artworksbyme/randoms_drafts/
 
-# Spotify bridge secrets - never commit these
-spotifycrendentials.yaml
 *.credentials.yaml
 .env
 .env.*

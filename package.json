@@ -1,8 +1,8 @@
 {
-  "name": "artgallery-spotify-bridge",
+  "name": "artgallery",
   "version": "1.0.0",
   "private": true,
-  "description": "Static MS Paint gallery with a serverless Spotify now-playing bridge",
+  "description": "Static MS Paint art gallery",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,7 +12,6 @@
     "node": ">=18"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "js-yaml": "^4.1.0"
+    "express": "^4.21.2"
   }
 }
