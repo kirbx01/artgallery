@@ -3,6 +3,8 @@
 
 > A retro MS Paint art gallery you can embed straight into your GitHub README
 
+![demo of the live view](image.png)
+
 This is an artwork gallery made with mainfocus for artists to be able to embed their artworks directly on readme, since gh is a nice platform to show your art (atleast you can perceive it as one), not restricted to 2D Artworks, be it png, svg, jpg.
 
 ## Embed a single artwork
@@ -33,7 +35,6 @@ Set `profileIcons.size` in `gallery.config.json` to change the displayed width; 
 ```
 
 ## Artworks
-
 
 | <a href="https://kirbx01.github.io/artgallery/?art=01"><img src="artworksbyme/angrypup.png" width="240" alt="Angry Pup"><br><sub>01 · Angry Pup</sub></a> | <a href="https://kirbx01.github.io/artgallery/?art=02"><img src="artworksbyme/blockart_unfinished_Anatomylesson.png" width="240" alt="Anatomy Lesson (Blockart)"><br><sub>02 · Anatomy Lesson (Blockart)</sub></a> | <a href="https://kirbx01.github.io/artgallery/?art=03"><img src="artworksbyme/CID_funartposter.png" width="240" alt="CID Fun Art Poster"><br><sub>03 · CID Fun Art Poster</sub></a> |
 | :---: | :---: | :---: |
