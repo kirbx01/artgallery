@@ -32,6 +32,8 @@
 
     <button class="menubar__item" type="button" data-menu="file" aria-expanded="false" aria-haspopup="true">File</button>
     <div class="menu" id="menu-file" role="menu" hidden>
+      <button class="menu__item" type="button" role="menuitem" data-action="open-image">Open Image... <span class="menu__key">Ctrl+O</span></button>
+      <div class="menu__sep" role="separator"></div>
       <button class="menu__item" type="button" role="menuitem" data-action="copy-link">Copy Shareable Link <span class="menu__key">Ctrl+L</span></button>
       <button class="menu__item" type="button" role="menuitem" data-action="next">Next Artwork <span class="menu__key">&rarr;</span></button>
       <button class="menu__item" type="button" role="menuitem" data-action="prev">Previous Artwork <span class="menu__key">&larr;</span></button>
@@ -164,6 +166,8 @@
 </main>
 
 <div id="embed-only"><img id="embed-art" alt="" decoding="sync"></div>
+
+<input type="file" id="open-file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif,image/bmp,.png,.jpg,.jpeg,.gif,.webp,.avif,.bmp" hidden>
 
 <div id="adjust-overlay" hidden>
   <div class="dialog bevel-out" role="dialog" aria-label="Filters and Adjustments" aria-modal="true">

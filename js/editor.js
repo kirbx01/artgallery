@@ -87,6 +87,7 @@
       doc = { image: null, undo: [], redo: [] };
       docs.set(id, doc);
     }
+    doc.title = item.title;
     activeDoc = doc;
     clearSel();
 
@@ -107,6 +108,87 @@
     frame.classList.remove('is-editing');
     hasArt = false;
   });
+
+  // ---------- local image import (File → Open Image, Ctrl+O, drag & drop) ----------
+  const fileIn = $f('open-file');
+  const IMAGE_RE = /\.(png|jpe?g|gif|webp|avif|bmp)$/i;
+
+  function humanName(name) {
+    return name
+      .replace(/\.[^.]+$/, '')
+      .replace(/[_-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/\b\w/g, c => c.toUpperCase()) || 'Untitled';
+  }
+
+  // Draw a local file onto the paint canvas as its own document. The file is
+  // read into memory only: the object URL is revoked right after decoding and
+  // nothing is ever uploaded. Reopening the same file restores its edits.
+  function openLocalImage(file) {
+    if (!file) return;
+    if (!IMAGE_RE.test(file.name) && !/^image\//.test(file.type || '')) {
+      flashStatus('Unsupported image type');
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      cancelText();
+      if (activeDoc) activeDoc.image = snapshot();
+
+      const key = 'local:' + file.name + ':' + file.size;
+      let doc = docs.get(key);
+      if (!doc) {
+        doc = { image: null, undo: [], redo: [], title: humanName(file.name) };
+        docs.set(key, doc);
+      }
+      if (activeDoc === doc) {
+        flashStatus('Image already open');
+        return;
+      }
+      activeDoc = doc;
+      clearSel();
+
+      artwork.classList.remove('is-loading');
+      if (doc.image) {
+        canvas.width = doc.image.width;
+        canvas.height = doc.image.height;
+        ctx.putImageData(doc.image, 0, 0);
+      } else {
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        ctx.drawImage(img, 0, 0);
+      }
+      hasArt = true;
+      frame.classList.add('is-editing');
+
+      el.title.textContent = 'myARTGALLERY - ' + doc.title;
+      el.name.textContent = doc.title + ' (local)';
+      el.size.textContent = canvas.width + ' x ' + canvas.height;
+      flashStatus('Opened ' + file.name + ' — stays on this machine');
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      flashStatus('Could not read image');
+    };
+    img.src = url;
+  }
+
+  if (fileIn) {
+    fileIn.addEventListener('change', () => {
+      openLocalImage(fileIn.files && fileIn.files[0]);
+      fileIn.value = '';
+    });
+    bindLater('open-image', () => fileIn.click());
+  }
+
+  function bindLater(action, fn) {
+    const b = document.querySelector('.menu__item[data-action="' + action + '"]');
+    if (b) b.addEventListener('click', fn);
+  }
+
   // ---------- pointer plumbing ----------
   function pt(e) {
     const r = canvas.getBoundingClientRect();
@@ -394,7 +476,8 @@
     if (!hasArt) { flashStatus('No artwork loaded'); return; }
     commitText();
     const item = state.items[state.index];
-    const name = ((item && item.title) || 'artwork').replace(/[\\/:*?"<>|]+/g, '_');
+    const fallback = (activeDoc && activeDoc.title) || (item && item.title) || 'artwork';
+    const name = fallback.replace(/[\\/:*?"<>|]+/g, '_');
     canvas.toBlob(blob => {
       if (!blob) { flashStatus('Could not export PNG'); return; }
       const url = URL.createObjectURL(blob);
@@ -817,6 +900,9 @@
     } else if (k === 's') {
       e.preventDefault();
       savePng();
+    } else if (k === 'o') {
+      e.preventDefault();
+      if (fileIn) fileIn.click();
     }
   });
 
