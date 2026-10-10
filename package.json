@@ -6,7 +6,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "manifest": "node tools/build-manifest.mjs"
+    "manifest": "node tools/build-manifest.mjs",
+    "check": "node tools/check.mjs",
+    "test": "node tools/check.mjs && bash tools/smoke.sh"
   },
   "engines": {
     "node": ">=18"
