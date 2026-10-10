@@ -396,10 +396,8 @@ function wireKeyboard() {
         break;
       case 'g':
       case 'G':
-        if (e.ctrlKey || e.metaKey) {
-          e.preventDefault();
-          runAction(state.square ? 'strip' : 'grid');
-        }
+        e.preventDefault();
+        runAction(state.square ? 'strip' : 'grid');
         break;
       case 'l':
       case 'L':

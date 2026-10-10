@@ -409,7 +409,9 @@
     const tr = d[i0], tg = d[i0 + 1], tb = d[i0 + 2], ta = d[i0 + 3];
     const fc = hexToRgb(state.colour);
     if (tr === fc.r && tg === fc.g && tb === fc.b && ta === 255) return false;
-    pushUndo(img);
+    // Snapshot a separate copy: img.data is mutated in place below, so pushing
+    // img itself would store the already-filled pixels.
+    pushUndo();
     const stack = [x, y];
     while (stack.length) {
       const cy = stack.pop(), cx = stack.pop();
@@ -875,7 +877,7 @@
     const d = drag;
     drag = null;
     try { canvas.releasePointerCapture(d.id); } catch (_) { /* ignore */ }
-    const p = e ? pt(e) : d.a;
+    const p = e ? pt(e) : (d.start || d.a);
     switch (d.tool) {
       case 'Pencil':
       case 'Brush':
@@ -933,6 +935,8 @@
   document.querySelectorAll('.tool').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tool && btn.dataset.tool !== 'Pick') lastTool = btn.dataset.tool;
+      // Like MS Paint, switching tools commits/drops any active selection.
+      if (sel) clearSel();
     });
   });
 
