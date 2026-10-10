@@ -10,7 +10,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <title>myARTGALLERY - Retro Pixel Gallery</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23c0c0c0'/%3E%3Crect x='1' y='1' width='14' height='5' fill='%23000080'/%3E%3Crect x='3' y='9' width='3' height='3' fill='%23000080'/%3E%3Crect x='6' y='9' width='3' height='3' fill='%23ff7b3d'/%3E%3Crect x='9' y='9' width='3' height='3' fill='%232ea84f'/%3E%3C/svg%3E">
+<link rel="icon" href="/paintbrush.png">
 <link rel="stylesheet" href="css/style.css">
 <script>if(/[?&]embed=1/.test(location.search))document.documentElement.classList.add('is-embed')</script>
 </head>
@@ -39,7 +39,8 @@
       <button class="menu__item" type="button" role="menuitem" data-action="grid">View as Square Grid <span class="menu__key">G</span></button>
       <button class="menu__item" type="button" role="menuitem" data-action="strip">View as Strip</button>
       <div class="menu__sep" role="separator"></div>
-      <button class="menu__item" type="button" role="menuitem" disabled>Save As... <span class="menu__key">Ctrl+S</span></button>
+      <button class="menu__item" type="button" role="menuitem" data-action="save-as">Save As... <span class="menu__key">Ctrl+S</span></button>
+      <button class="menu__item" type="button" role="menuitem" data-action="readme-panel">README Panel...</button>
       <button class="menu__item" type="button" role="menuitem" data-action="reload">Reload Gallery</button>
     </div>
 
@@ -51,8 +52,17 @@
       <button class="menu__item" type="button" role="menuitem" data-action="fullscreen">Toggle Fullscreen</button>
     </div>
 
-    <button class="menubar__item" type="button" disabled>Edit</button>
-    <button class="menubar__item" type="button" disabled>Image</button>
+    <button class="menubar__item" type="button" data-menu="edit" aria-expanded="false" aria-haspopup="true">Edit</button>
+    <div class="menu" id="menu-edit" role="menu" hidden>
+      <button class="menu__item" type="button" role="menuitem" data-action="undo">Undo <span class="menu__key">Ctrl+Z</span></button>
+      <button class="menu__item" type="button" role="menuitem" data-action="redo">Redo <span class="menu__key">Ctrl+Y</span></button>
+    </div>
+
+    <button class="menubar__item" type="button" data-menu="image" aria-expanded="false" aria-haspopup="true">Image</button>
+    <div class="menu" id="menu-image" role="menu" hidden>
+      <button class="menu__item" type="button" role="menuitem" data-action="adjust">Filters / Adjustments...</button>
+    </div>
+
     <button class="menubar__item" type="button" disabled>Colors</button>
     <button class="menubar__item" type="button" disabled>Help</button>
   </nav>
@@ -65,12 +75,20 @@
           <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><polygon points="2,2 2,13 6,10 9,14 11,13 8,9 13,9" fill="#000" stroke="#fff" stroke-width="1"/></svg></span>
           <span class="sr-only">Select</span>
         </button>
-        <button class="tool tool-btn" type="button" id="free-select" data-tool="Free Select" aria-pressed="false" title="Free-form select">
-          <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><rect x="2" y="2" width="10" height="10" fill="none" stroke="#000" stroke-dasharray="2,2"/><rect x="6" y="6" width="8" height="8" fill="#fff" stroke="#000"/></svg></span>
-          <span class="sr-only">Free-form select</span>
+        <button class="tool tool-btn" type="button" id="crop" data-tool="Crop" aria-pressed="false" title="Crop">
+          <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><path d="M4,1 V12 H14 M12,15 V4 H2" fill="none" stroke="#000" stroke-width="2"/></svg></span>
+          <span class="sr-only">Crop</span>
         </button>
       </div>
       <div class="toolbox__group">
+        <button class="tool tool-btn" type="button" id="pencil" data-tool="Pencil" aria-pressed="false" title="Pencil">
+          <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><path d="M3,13 L4,10 L11,3 L13,5 L6,12 Z" fill="#fff" stroke="#000"/><path d="M3,13 L4,10 L6,12 Z" fill="#000" stroke="#000"/></svg></span>
+          <span class="sr-only">Pencil</span>
+        </button>
+        <button class="tool tool-btn" type="button" id="brush" data-tool="Brush" aria-pressed="false" title="Brush">
+          <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><path d="M14,2 L9,7" stroke="#000" stroke-width="2"/><path d="M8,6 L11,9 L7,13 L3,13 L3,9 Z" fill="#fff" stroke="#000"/></svg></span>
+          <span class="sr-only">Brush</span>
+        </button>
         <button class="tool tool-btn" type="button" id="eraser" data-tool="Eraser" aria-pressed="false" title="Eraser">
           <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><rect x="3" y="4" width="9" height="9" fill="#ffcc99" stroke="#000"/><rect x="3" y="4" width="9" height="3" fill="#ff6666"/><rect x="5" y="11" width="8" height="3" fill="#ffffff" stroke="#000"/></svg></span>
           <span class="sr-only">Eraser</span>
@@ -93,10 +111,6 @@
           <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><line x1="2" y1="14" x2="14" y2="2" stroke="#000" stroke-width="2"/></svg></span>
           <span class="sr-only">Line</span>
         </button>
-        <button class="tool tool-btn" type="button" id="curve" data-tool="Curve" aria-pressed="false" title="Curve">
-          <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><path d="M3,11 C3,4 13,12 13,5" fill="none" stroke="#000" stroke-width="2"/></svg></span>
-          <span class="sr-only">Curve</span>
-        </button>
         <button class="tool tool-btn" type="button" id="rect" data-tool="Rectangle" aria-pressed="false" title="Rectangle">
           <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><rect x="2" y="3" width="12" height="10" fill="none" stroke="#000" stroke-width="2"/></svg></span>
           <span class="sr-only">Rectangle</span>
@@ -106,11 +120,11 @@
           <span class="sr-only">Ellipse</span>
         </button>
       </div>
-      <div class="toolbox__group">
-        <button class="tool tool-btn" type="button" id="zoom" data-tool="Zoom" aria-pressed="false" title="Zoom">
-          <span class="tool__glyph" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" style="image-rendering: pixelated;"><circle cx="7" cy="7" r="4" fill="none" stroke="#000" stroke-width="2"/><line x1="10" y1="10" x2="14" y2="14" stroke="#000" stroke-width="2"/></svg></span>
-          <span class="sr-only">Zoom</span>
-        </button>
+      <div class="toolbox__group" role="radiogroup" aria-label="Brush size">
+        <button class="size-btn" type="button" data-size="1" aria-pressed="false" title="Size 1 px"><span class="size-bar" style="height:1px"></span></button>
+        <button class="size-btn" type="button" data-size="2" aria-pressed="false" title="Size 2 px"><span class="size-bar" style="height:2px"></span></button>
+        <button class="size-btn" type="button" data-size="4" aria-pressed="true" title="Size 4 px"><span class="size-bar" style="height:4px"></span></button>
+        <button class="size-btn" type="button" data-size="8" aria-pressed="false" title="Size 8 px"><span class="size-bar" style="height:8px"></span></button>
       </div>
     </aside>
 
@@ -118,6 +132,8 @@
 
       <div class="canvas-frame bevel-in" id="canvas-frame">
         <img id="artwork" alt="" decoding="async">
+        <canvas id="paint" aria-label="Drawing canvas">Drawing canvas</canvas>
+        <div id="sel-box" hidden></div>
       </div>
 
       <div class="art-meta">
@@ -149,8 +165,80 @@
 
 <div id="embed-only"><img id="embed-art" alt="" decoding="sync"></div>
 
+<div id="adjust-overlay" hidden>
+  <div class="dialog bevel-out" role="dialog" aria-label="Filters and Adjustments" aria-modal="true">
+    <header class="titlebar">
+      <span class="titlebar__icon" aria-hidden="true">F</span>
+      <span class="titlebar__text">Filters / Adjustments</span>
+      <div class="titlebar__btns"><button class="tb-btn tb-btn--close" id="adjust-close" type="button" aria-label="Close">&#10005;</button></div>
+    </header>
+    <div class="dialog__body">
+      <div class="dlg-sep">Adjust</div>
+      <label class="dlg-row"><span>Brightness</span><input type="range" id="f-bright" min="-100" max="100" step="1" value="0"><output id="f-bright-v">0</output></label>
+      <label class="dlg-row"><span>Contrast</span><input type="range" id="f-contrast" min="-100" max="100" step="1" value="0"><output id="f-contrast-v">0</output></label>
+      <label class="dlg-row"><span>Saturation</span><input type="range" id="f-sat" min="-100" max="100" step="1" value="0"><output id="f-sat-v">0</output></label>
+      <label class="dlg-row"><span>Hue</span><input type="range" id="f-hue" min="-180" max="180" step="1" value="0"><output id="f-hue-v">0</output></label>
+      <div class="dlg-checks">
+        <label class="dlg-check"><input type="checkbox" id="f-gray"> Grayscale</label>
+        <label class="dlg-check"><input type="checkbox" id="f-invert"> Invert</label>
+      </div>
+      <div class="dlg-sep">Effects</div>
+      <label class="dlg-row"><span>Blur</span><input type="range" id="f-blur" min="0" max="10" step="1" value="0"><output id="f-blur-v">0</output></label>
+      <label class="dlg-row"><span>Sharpen</span><input type="range" id="f-sharp" min="0" max="100" step="1" value="0"><output id="f-sharp-v">0</output></label>
+      <label class="dlg-row"><span>Pixelate</span><input type="range" id="f-pix" min="0" max="32" step="2" value="0"><output id="f-pix-v">0</output></label>
+      <div class="dialog__btns">
+        <button class="tb-btn dlg-btn" id="f-reset" type="button">Reset</button>
+        <button class="tb-btn dlg-btn" id="f-cancel" type="button">Cancel</button>
+        <button class="tb-btn dlg-btn" id="f-apply" type="button">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="readme-overlay" hidden>
+  <div class="dialog bevel-out" role="dialog" aria-label="README Panel" aria-modal="true">
+    <header class="titlebar">
+      <span class="titlebar__icon" aria-hidden="true">R</span>
+      <span class="titlebar__text">README Panel</span>
+      <div class="titlebar__btns"><button class="tb-btn tb-btn--close" id="rp-close" type="button" aria-label="Close">&#10005;</button></div>
+    </header>
+    <div class="dialog__body">
+      <div class="dlg-sep">Artwork &mdash; local only, never uploaded</div>
+      <div class="rp-import">
+        <label class="tb-btn dlg-btn rp-pick">Choose image...
+          <input type="file" id="rp-file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif,image/bmp,.png,.jpg,.jpeg,.gif,.webp,.avif,.bmp">
+        </label>
+        <span class="rp-name" id="rp-name">no image selected</span>
+      </div>
+      <div class="rp-preview-row">
+        <img id="rp-preview" class="rp-preview" alt="Artwork preview" hidden>
+        <div class="rp-empty" id="rp-empty">preview</div>
+      </div>
+      <label class="dlg-row dlg-row--text"><span>Title</span><input type="text" id="rp-title" placeholder="Artwork" maxlength="120"></label>
+      <label class="dlg-row dlg-row--text"><span>Art ID</span><input type="text" id="rp-id" value="01" maxlength="8"></label>
+      <label class="dlg-row"><span>Thumb size</span><input type="number" id="rp-size" min="1" max="4096" value="52"><output>px</output></label>
+      <label class="dlg-row dlg-row--text"><span>Link target</span>
+        <select id="rp-target">
+          <option value="local" selected>Local gallery (localhost:8080)</option>
+          <option value="site">Gallery site (kirbx01.github.io)</option>
+          <option value="custom">Custom URL...</option>
+        </select>
+      </label>
+      <label class="dlg-row dlg-row--text" id="rp-base-row" hidden><span>Base URL</span><input type="text" id="rp-base" placeholder="https://example.com/gallery"></label>
+      <div class="dlg-sep">Snippet</div>
+      <textarea id="rp-snippet" class="rp-snippet" rows="4" readonly spellcheck="false" aria-label="README snippet"></textarea>
+      <div class="rp-hint">Thumbnail resolves once the file lives at artworks/generated/&lt;id&gt;.svg (artgallery add).</div>
+      <div class="dialog__btns">
+        <button class="tb-btn dlg-btn" id="rp-copy" type="button">Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="js/data.js"></script>
 <script src="js/palette.js"></script>
 <script src="js/app.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/readme.js"></script>
 </body>
 </html>
