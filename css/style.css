@@ -782,6 +782,12 @@ html.is-embed #embed-art {
   visibility: visible;
 }
 
+.canvas-frame.is-dragover {
+  outline: 2px dashed var(--title-a);
+  outline-offset: -6px;
+  background-color: #dce8ff;
+}
+
 #artwork.is-loading+#paint {
   display: none;
 }
@@ -928,6 +934,76 @@ html.is-embed #embed-art {
   min-width: 70px;
   height: 22px;
   font-size: 11px;
+}
+
+/* --- editor-first welcome screen --- */
+
+#welcome {
+  grid-area: 1 / 1;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+}
+
+#welcome[hidden] {
+  display: none;
+}
+
+.welcome__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 26px 14px;
+  background: var(--win-gray);
+  text-align: center;
+}
+
+.welcome__icon {
+  width: 48px;
+  height: 48px;
+  image-rendering: auto;
+}
+
+.welcome__title {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.welcome__btn {
+  min-width: 150px;
+  padding: 7px 18px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  color: #000;
+  background: var(--win-gray);
+  border: 1px solid;
+  border-color: var(--win-gray-lt) var(--win-gray-dk2) var(--win-gray-dk2) var(--win-gray-lt);
+  box-shadow: inset -1px -1px 0 var(--win-gray-dk), inset 1px 1px 0 #fff;
+  cursor: pointer;
+}
+
+.welcome__btn:hover {
+  background: #c8c8c8;
+}
+
+.welcome__btn:active {
+  box-shadow: inset 1px 1px 0 var(--win-gray-dk2), inset -1px -1px 0 #fff;
+  padding: 8px 17px 6px 19px;
+}
+
+.welcome__btn:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+
+.welcome__hint {
+  font-size: 10px;
+  color: var(--text-dim);
 }
 
 /* --- README panel (js/readme.js) --- */

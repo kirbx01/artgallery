@@ -78,6 +78,7 @@
     if (!state.items.length) return;
     hasArt = true;
     cancelText();
+    hideWelcome();
     if (activeDoc) activeDoc.image = snapshot();
 
     const item = state.items[state.index];
@@ -108,6 +109,36 @@
     frame.classList.remove('is-editing');
     hasArt = false;
   });
+
+  // ---------- editor-first welcome screen ----------
+  const welcomeEl = $f('welcome');
+  const welcomeBtn = $f('welcome-upload');
+
+  function hideWelcome() {
+    if (welcomeEl) welcomeEl.hidden = true;
+  }
+
+  // Land on an empty editor: canvas idle, upload prompt centred, gallery
+  // metadata hidden until an artwork or import fills the stage.
+  function showWelcome() {
+    if (!welcomeEl) return;
+    cancelText();
+    clearSel();
+    hasArt = false;
+    activeDoc = null;
+    frame.classList.remove('is-editing');
+    hideWelcome();
+    welcomeEl.hidden = false;
+    state.welcome = true;
+    el.artMeta.hidden = true;
+    el.title.textContent = 'myARTGALLERY - [Untitled]';
+    el.name.textContent = 'Untitled';
+    el.size.textContent = '';
+    el.stView.textContent = 'Editor: ready';
+    el.stIndex.textContent = 'no image';
+    el.stTool.textContent = 'Tool: ' + state.tool;
+  }
+  window.showWelcome = showWelcome;
 
   // ---------- local image import (File → Open Image, Ctrl+O, drag & drop) ----------
   const fileIn = $f('open-file');
@@ -163,6 +194,11 @@
       }
       hasArt = true;
       frame.classList.add('is-editing');
+      hideWelcome();
+      // local image: no permalink/embed, but keep name + size visible
+      el.artMeta.hidden = false;
+      el.permalink.hidden = true;
+      el.embedLink.hidden = true;
 
       el.title.textContent = 'myARTGALLERY - ' + doc.title;
       el.name.textContent = doc.title + ' (local)';
@@ -182,7 +218,51 @@
       fileIn.value = '';
     });
     bindLater('open-image', () => fileIn.click());
+    if (welcomeBtn) welcomeBtn.addEventListener('click', () => fileIn.click());
   }
+
+  // ---------- drag & drop: drop an image anywhere on the stage ----------
+  function fileFromDrop(e) {
+    const dt = e.dataTransfer;
+    if (!dt) return null;
+    const files = dt.files;
+    if (!files || !files.length) return null;
+    for (let i = 0; i < files.length; i++) {
+      if (IMAGE_RE.test(files[i].name) || /^image\//.test(files[i].type || '')) {
+        return files[i];
+      }
+    }
+    return null;
+  }
+
+  ['dragenter', 'dragover'].forEach(type => {
+    frame.addEventListener(type, e => {
+      if (!e.dataTransfer || !Array.prototype.includes.call(e.dataTransfer.types || [], 'Files')) return;
+      e.preventDefault();
+      frame.classList.add('is-dragover');
+    });
+  });
+
+  frame.addEventListener('dragleave', e => {
+    if (!e.relatedTarget || !frame.contains(e.relatedTarget)) {
+      frame.classList.remove('is-dragover');
+    }
+  });
+
+  frame.addEventListener('drop', e => {
+    const file = fileFromDrop(e);
+    e.preventDefault();
+    frame.classList.remove('is-dragover');
+    if (!file) {
+      flashStatus('Drop an image file (png, jpg, gif, webp, avif, bmp)');
+      return;
+    }
+    openLocalImage(file);
+  });
+
+  // Never let the browser navigate away when a file misses the stage.
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => e.preventDefault());
 
   function bindLater(action, fn) {
     const b = document.querySelector('.menu__item[data-action="' + action + '"]');

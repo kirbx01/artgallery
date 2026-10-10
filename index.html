@@ -136,9 +136,17 @@
         <img id="artwork" alt="" decoding="async">
         <canvas id="paint" aria-label="Drawing canvas">Drawing canvas</canvas>
         <div id="sel-box" hidden></div>
+        <div id="welcome" hidden>
+          <div class="welcome__card bevel-out">
+            <img class="welcome__icon" src="paintbrush.png" alt="" width="48" height="48">
+            <span class="welcome__title">Untitled</span>
+            <button class="welcome__btn" id="welcome-upload" type="button">Upload Image</button>
+            <span class="welcome__hint">or drop an image here &mdash; nothing leaves your machine</span>
+          </div>
+        </div>
       </div>
 
-      <div class="art-meta">
+      <div class="art-meta" id="art-meta">
         <span class="art-meta__name" id="art-name">Loading&hellip;</span>
         <span id="art-size" class="art-meta__tag"></span>
         <a class="art-meta__tag" id="art-link" href="#">permalink</a>
@@ -146,7 +154,7 @@
       </div>
 
       <div class="tray bevel-out">
-        <div class="tray__label" id="tray-label">Gallery &mdash; click a thumbnail to open it</div>
+        <div class="tray__label" id="tray-label">Samples &mdash; click a thumbnail to open it in the editor</div>
         <div class="tray__scroller bevel-in" id="tray" role="listbox" aria-label="Artwork thumbnails" tabindex="0"></div>
       </div>
 

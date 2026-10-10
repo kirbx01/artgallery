@@ -8,6 +8,7 @@ const el = {
   frame: $('#canvas-frame'),
   name: $('#art-name'),
   size: $('#art-size'),
+  artMeta: $('#art-meta'),
   permalink: $('#art-link'),
   embedLink: $('#art-embed'),
   embedArt: $('#embed-art'),
@@ -31,7 +32,8 @@ const state = {
   square: false,
   cols: 3,
   limit: 0,
-  embed: false
+  embed: false,
+  welcome: false
 };
 
 function clampIndex(i) {
@@ -98,6 +100,7 @@ async function loadArtworks() {
 }
 
 function showArtwork(index, { updateUrl = true, scroll = true } = {}) {
+  state.welcome = false;
   state.index = clampIndex(index);
   const item = state.items[state.index];
   const src = window.ART_DIR + item.file;
@@ -115,6 +118,8 @@ function showArtwork(index, { updateUrl = true, scroll = true } = {}) {
   permalink.searchParams.delete('embed');
   el.permalink.href = permalink.href;
   el.permalink.textContent = '?art=' + item.id;
+  el.permalink.hidden = false;
+  el.artMeta.hidden = false;
 
   const embedUrl = new URL(location.href);
   embedUrl.searchParams.set('art', item.id);
@@ -122,6 +127,7 @@ function showArtwork(index, { updateUrl = true, scroll = true } = {}) {
   embedUrl.searchParams.delete('grid');
   el.embedLink.href = embedUrl.href;
   el.embedLink.textContent = 'embed';
+  el.embedLink.hidden = false;
   el.embedArt.src = src;
   el.embedArt.alt = item.title;
 
@@ -206,8 +212,8 @@ function applySquareMode(count) {
   el.tray.classList.toggle('is-square', state.square);
   el.tray.style.setProperty('--cols', String(state.cols));
   el.trayLabel.textContent = state.square
-    ? 'Square grid - ' + state.limit + ' artworks (' + state.cols + ' x ' + state.cols + ')'
-    : 'Gallery - click a thumbnail to open it';
+    ? 'Samples grid - ' + state.limit + ' artworks (' + state.cols + ' x ' + state.cols + ')'
+    : 'Samples - click a thumbnail to open it in the editor';
 
   buildTray();
 }
@@ -362,6 +368,13 @@ function wireKeyboard() {
     const tag = document.activeElement?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
+    // On the editor welcome screen any navigation key opens the first sample.
+    if (state.welcome && ['ArrowRight', 'ArrowLeft', 'PageDown', 'PageUp', 'Home', 'End'].includes(e.key)) {
+      e.preventDefault();
+      showArtwork(0);
+      return;
+    }
+
     switch (e.key) {
       case 'ArrowRight':
       case 'PageDown':
@@ -432,14 +445,6 @@ async function init() {
 
   state.items = await loadArtworks();
 
-  if (!state.items.length) {
-    el.stView.textContent = 'No artworks found';
-    el.title.textContent = 'myARTGALLERY';
-    el.name.textContent = 'Add images to artworksbyme/';
-    el.size.textContent = 'then run node tools/build-manifest.mjs';
-    return;
-  }
-
   const grid = p.get('grid');
   applySquareMode(grid == null ? null : parseInt(grid, 10) || null);
 
@@ -457,6 +462,30 @@ async function init() {
   if (readme) el.back.href = readme;
 
   const requested = p.get('art');
+  // Editor-first: no ?art= link means land in the paint editor with the
+  // upload prompt; permalinks and embeds keep loading their artwork.
+  const welcome = typeof window.showWelcome === 'function' &&
+    !state.embed && requested == null && grid == null;
+
+  if (!state.items.length) {
+    if (welcome) {
+      window.showWelcome();
+      flashStatus('No samples yet - upload an image to start');
+    } else {
+      el.stView.textContent = 'No artworks found';
+      el.title.textContent = 'myARTGALLERY';
+      el.name.textContent = 'Add images to artworksbyme/';
+      el.size.textContent = 'then run node tools/build-manifest.mjs';
+    }
+    return;
+  }
+
+  if (welcome) {
+    window.showWelcome();
+    flashStatus(state.items.length + ' artworks in Samples');
+    return;
+  }
+
   const resolved = requested == null ? 0 : idToIndex(requested);
   showArtwork(resolved >= 0 ? resolved : 0, { updateUrl: false });
 
